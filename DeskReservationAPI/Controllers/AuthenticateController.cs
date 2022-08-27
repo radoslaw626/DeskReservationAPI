@@ -4,8 +4,10 @@ using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Text;
 using System.Threading.Tasks;
+using AutoMapper;
+using DeskReservationAPI.Dto;
 using DeskReservationAPI.Entities;
-using DeskReservationAPI.Models;
+using DeskReservationAPI.Validators;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
@@ -21,89 +23,98 @@ namespace DeskReservationAPI.Controllers
         private readonly UserManager<ApplicationUser> _userManager;
         private readonly RoleManager<IdentityRole> _roleManager;
         private readonly IConfiguration _configuration;
+        private readonly IMapper _mapper;
 
         public AuthenticateController(UserManager<ApplicationUser> userManager, RoleManager<IdentityRole> roleManager,
-            IConfiguration configuration)
+            IConfiguration configuration, IMapper mapper)
         {
             _userManager = userManager;
             _roleManager = roleManager;
             _configuration = configuration;
+            _mapper = mapper;
         }
 
         [HttpPost]
         [Route("register")]
-        public async Task<IActionResult> Register([FromBody] RegisterModel model)
+        public async Task<IActionResult> Register([FromBody] RegisterDto registerDto)
         {
-            var userExistsEmail = await _userManager.FindByEmailAsync(model.Email);
+            RegisterDtoValidator validator = new();
+            var validResult = await validator.ValidateAsync(registerDto);
+            if (!validResult.IsValid)
+            {
+                return BadRequest(validResult.Errors);
+            }
+            var userExistsEmail = await _userManager.FindByEmailAsync(registerDto.Email);
             if (userExistsEmail != null)
                 return StatusCode(StatusCodes.Status500InternalServerError,
-                    new Response { Status = "Error", Message = "User with this email already exists" });
-            var userExistsName = await _userManager.FindByNameAsync(model.UserName);
+                    new ResponseDto { Status = "Error", Message = "User with this email already exists" });
+            var userExistsName = await _userManager.FindByNameAsync(registerDto.UserName);
             if (userExistsName != null)
                 return StatusCode(StatusCodes.Status500InternalServerError,
-                    new Response { Status = "Error", Message = "User with this UserName already exists" });
+                    new ResponseDto { Status = "Error", Message = "User with this UserName already exists" });
 
-            ApplicationUser user = new()
-            {
-                Email = model.Email,
-                SecurityStamp = Guid.NewGuid().ToString(),
-                UserName = model.UserName,
-                FirstName=model.FirstName,
-                LastName = model.LastName
-            };
-            var result = await _userManager.CreateAsync(user, model.Password);
+            var user = _mapper.Map<ApplicationUser>(registerDto);
+            user.SecurityStamp = Guid.NewGuid().ToString();
+
+            var result = await _userManager.CreateAsync(user, registerDto.Password);
             if (!result.Succeeded)
                 return StatusCode(StatusCodes.Status500InternalServerError,
-                    new Response { Status = "Error", Message = "UserCreation failed!" });
+                    new ResponseDto { Status = "Error", Message = "UserCreation failed!" });
 
-            return Ok(new Response { Status = "Success", Message = "User created successfully" });
+            return Ok(new ResponseDto { Status = "Success", Message = "User created successfully" });
         }
 
         [HttpPost]
         [Route("register-admin")]
-        public async Task<IActionResult> RegisterAdmin([FromBody] RegisterModel model)
+        public async Task<IActionResult> RegisterAdmin([FromBody] RegisterDto registerDto)
         {
-            var userExistsEmail = await _userManager.FindByEmailAsync(model.Email);
+            RegisterDtoValidator validator = new();
+            var validResult = await validator.ValidateAsync(registerDto);
+            if (!validResult.IsValid)
+            {
+                return BadRequest(validResult.Errors);
+            }
+            var userExistsEmail = await _userManager.FindByEmailAsync(registerDto.Email);
             if (userExistsEmail != null)
                 return StatusCode(StatusCodes.Status500InternalServerError,
-                    new Response { Status = "Error", Message = "User with this email already exists" });
-            var userExistsName = await _userManager.FindByNameAsync(model.UserName);
+                    new ResponseDto { Status = "Error", Message = "User with this email already exists" });
+            var userExistsName = await _userManager.FindByNameAsync(registerDto.UserName);
             if (userExistsName != null)
                 return StatusCode(StatusCodes.Status500InternalServerError,
-                    new Response { Status = "Error", Message = "User with this UserName already exists" });
+                    new ResponseDto { Status = "Error", Message = "User with this UserName already exists" });
 
-            ApplicationUser user = new()
-            {
-                Email = model.Email,
-                SecurityStamp = Guid.NewGuid().ToString(),
-                UserName = model.UserName,
-                FirstName = model.FirstName,
-                LastName = model.LastName
-            };
-
-            var result = await _userManager.CreateAsync(user, model.Password);
+            var user = _mapper.Map<ApplicationUser>(registerDto);
+            user.SecurityStamp = Guid.NewGuid().ToString();
+            
+            var result = await _userManager.CreateAsync(user, registerDto.Password);
             if (!result.Succeeded)
                 return StatusCode(StatusCodes.Status500InternalServerError,
-                    new Response { Status = "Error", Message = "UserCreation failed!" });
+                    new ResponseDto { Status = "Error", Message = "UserCreation failed!" });
 
-            if (!await _roleManager.RoleExistsAsync(UserRoles.Admin))
-                await _roleManager.CreateAsync(new IdentityRole(UserRoles.Admin));
+            if (!await _roleManager.RoleExistsAsync(UserRolesDto.Admin))
+                await _roleManager.CreateAsync(new IdentityRole(UserRolesDto.Admin));
 
-            if (!await _roleManager.RoleExistsAsync(UserRoles.Admin))
-                await _roleManager.CreateAsync(new IdentityRole(UserRoles.User));
+            if (!await _roleManager.RoleExistsAsync(UserRolesDto.Admin))
+                await _roleManager.CreateAsync(new IdentityRole(UserRolesDto.User));
 
-            if (await _roleManager.RoleExistsAsync(UserRoles.Admin))
-                await _userManager.AddToRoleAsync(user, UserRoles.Admin);
+            if (await _roleManager.RoleExistsAsync(UserRolesDto.Admin))
+                await _userManager.AddToRoleAsync(user, UserRolesDto.Admin);
 
-            return Ok(new Response { Status = "Success", Message = "Admin created successfully" });
+            return Ok(new ResponseDto { Status = "Success", Message = "Admin created successfully" });
         }
 
         [HttpPost]
         [Route("login")]
-        public async Task<IActionResult> Login([FromBody] LoginModel model)
+        public async Task<IActionResult> Login([FromBody] LoginDto loginDto)
         {
-            var user = await _userManager.FindByNameAsync(model.UserName);
-            if (user == null || !await _userManager.CheckPasswordAsync(user, model.Password)) return Unauthorized();
+            LoginDtoValidator validator = new();
+            var validResult = await validator.ValidateAsync(loginDto);
+            if (!validResult.IsValid)
+            {
+                return BadRequest(validResult.Errors);
+            }
+            var user = await _userManager.FindByNameAsync(loginDto.UserName);
+            if (user == null || !await _userManager.CheckPasswordAsync(user, loginDto.Password)) return Unauthorized();
             var userRoles = await _userManager.GetRolesAsync(user);
 
             var authClaims = new List<Claim>

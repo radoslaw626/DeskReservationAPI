@@ -14,6 +14,7 @@ using System.Text;
 using System.Threading.Tasks;
 using DeskReservationAPI.Data;
 using DeskReservationAPI.Entities;
+using DeskReservationAPI.Helpers;
 using DeskReservationAPI.IServices;
 using DeskReservationAPI.Services;
 using Microsoft.AspNetCore.Authorization;
@@ -38,8 +39,8 @@ namespace DeskReservationAPI
 
             services.AddControllers();
 
-            services.AddDbContext<ApplicationDbContext>(options =>
-               options.UseSqlServer(Configuration.GetConnectionString("DefaultConnection")));
+            services.AddDbContext <ApplicationDbContext>(options =>
+                options.UseSqlServer(Configuration.GetConnectionString("DefaultConnection")));
 
             services.AddIdentity<ApplicationUser, IdentityRole>()
                 .AddRoles<IdentityRole>()
@@ -61,6 +62,7 @@ namespace DeskReservationAPI
                         IssuerSigningKey =
                             new SymmetricSecurityKey(Encoding.UTF8.GetBytes(Configuration["JWT:SecretKey"]))
                     };
+
                 });
 
             services.AddAuthorization(options =>
@@ -101,7 +103,9 @@ namespace DeskReservationAPI
                     }
                 });
             });
+            services.AddAutoMapper(typeof(ApiMappingProfile).Assembly);
             services.AddTransient<ILocationService, LocationService>();
+            services.AddTransient<IDeskService, DeskService>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

@@ -1,6 +1,6 @@
-﻿namespace DeskReservationAPI.Models
+﻿namespace DeskReservationAPI.Dto
 {
-    public class UserRoles
+    public class UserRolesDto
     {
         public static string Admin = "Admin";
         public static string User = "User";

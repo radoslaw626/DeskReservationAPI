@@ -173,6 +173,7 @@ namespace DeskReservationAPI.Migrations
                 {
                     Id = table.Column<long>(type: "bigint", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
+                    Available = table.Column<bool>(type: "bit", nullable: false),
                     LocationId = table.Column<long>(type: "bigint", nullable: true)
                 },
                 constraints: table =>

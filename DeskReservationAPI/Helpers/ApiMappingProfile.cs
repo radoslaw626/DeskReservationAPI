@@ -1,5 +1,5 @@
 ﻿using AutoMapper;
-using DeskReservationAPI.Dtos;
+using DeskReservationAPI.Dto;
 using DeskReservationAPI.Entities;
 
 namespace DeskReservationAPI.Helpers
@@ -8,10 +8,8 @@ namespace DeskReservationAPI.Helpers
     {
         public ApiMappingProfile()
         {
-            CreateMap<ApplicationUser, ApplicationUserDto>().ReverseMap();
-            CreateMap<Desk, DeskDto>().ReverseMap();
-            CreateMap<Location, LocationDto>().ReverseMap();
-            CreateMap<Reservation, ReservationDto>().ReverseMap();
+            CreateMap<LocationAddDto, Location>();
+            CreateMap<RegisterDto, ApplicationUser>();
         }
     }
 }

@@ -7,7 +7,7 @@ namespace DeskReservationAPI.Entities
     {
         public Location()
         {
-            Desks= new List<Desk>();
+            Desks = new List<Desk>();
         }
 
         public long Id { get; set; }
