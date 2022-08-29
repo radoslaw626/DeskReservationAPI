@@ -8,7 +8,7 @@ namespace DeskReservationAPI.Validators
         public RegisterDtoValidator()
         {
             RuleFor(x => x.Email)
-                .EmailAddress()
+                .EmailAddress().WithMessage("Your Email format is not correct")
                 .NotEmpty().WithMessage("Your Email cannot be empty");
             RuleFor(x => x.FirstName)
                 .NotEmpty().WithMessage("Your FirstName cannot be empty");

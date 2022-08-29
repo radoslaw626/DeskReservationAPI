@@ -38,7 +38,6 @@ namespace DeskReservationAPI
         {
 
             services.AddControllers();
-
             services.AddDbContext <ApplicationDbContext>(options =>
                 options.UseSqlServer(Configuration.GetConnectionString("DefaultConnection")));
 
@@ -106,6 +105,7 @@ namespace DeskReservationAPI
             services.AddAutoMapper(typeof(ApiMappingProfile).Assembly);
             services.AddTransient<ILocationService, LocationService>();
             services.AddTransient<IDeskService, DeskService>();
+            services.AddTransient<IReservationService, ReservationService>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

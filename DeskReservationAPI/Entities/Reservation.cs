@@ -7,7 +7,8 @@ namespace DeskReservationAPI.Entities
         public long Id { get; set; }
         public ApplicationUser User { get; set; }
         public Desk Desk { get; set; }
-        public DateTime ReservationDateTime { get; set; }   
+        public DateTime StartDate { get; set; }   
+        public DateTime EndDate { get; set; }   
 
     }
 }

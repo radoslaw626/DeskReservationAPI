@@ -12,7 +12,7 @@ namespace DeskReservationAPI.IServices
         void AddLocation(Location location);
         void DeleteLocation(Location location);
         void AddDeskToLocation(Location location, Desk desk);
-        void RemoveDeskFromLocation(Location location, long deskId);
+        void RemoveDeskFromLocation(Location location, Desk desk);
 
     }
 }

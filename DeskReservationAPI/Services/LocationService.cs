@@ -40,37 +40,21 @@ namespace DeskReservationAPI.Services
 
         public void DeleteLocation(Location location)
         {
-            var locationToRemove = _context.Locations.Include(x => x.Desks).FirstOrDefault(y => y.Id == location.Id);
-            if (location.Desks.Count == 0)
-            {
-                _context.Locations.Remove(location);
-                _context.SaveChanges();
-            }
+            _context.Locations.Remove(location);
+            _context.SaveChanges();
         }
 
         public void AddDeskToLocation(Location location, Desk desk)
         {
-            var locationToUpdate = _context.Locations.Include(x => x.Desks).FirstOrDefault(x => x.Id == location.Id);
-            if (locationToUpdate != null)
-            {
-                locationToUpdate.Desks.Add(desk);
-                _context.SaveChanges();
-            }
+            location.Desks.Add(desk);
+            _context.SaveChanges();
         }
 
-        public void RemoveDeskFromLocation(Location location, long deskId)
+        public void RemoveDeskFromLocation(Location location, Desk desk)
         {
-            var locationToUpdate = _context.Locations.Include(x => x.Desks).FirstOrDefault(x => x.Id == location.Id);
-            if (locationToUpdate != null)
-            {
-                var desk = _context.Desks.FirstOrDefault(x => x.Id == deskId);
-                if (desk != null)
-                {
-                    locationToUpdate.Desks.Remove(desk);
-                    _context.Desks.Remove(desk);
-                    _context.SaveChanges();
-                }
-            }
+            location.Desks.Remove(desk);
+            _context.Desks.Remove(desk);
+            _context.SaveChanges();
         }
     }
 }

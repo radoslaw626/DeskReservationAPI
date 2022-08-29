@@ -4,14 +4,16 @@ using DeskReservationAPI.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 namespace DeskReservationAPI.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20220829005042_update-reservation-entity")]
+    partial class updatereservationentity
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -97,7 +99,7 @@ namespace DeskReservationAPI.Migrations
                         .HasColumnType("bigint")
                         .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
 
-                    b.Property<bool?>("Available")
+                    b.Property<bool>("Available")
                         .HasColumnType("bit");
 
                     b.Property<long?>("LocationId")
@@ -138,10 +140,10 @@ namespace DeskReservationAPI.Migrations
                     b.Property<long?>("DeskId")
                         .HasColumnType("bigint");
 
-                    b.Property<DateTime>("EndDate")
+                    b.Property<DateTime>("ReservationEndDateTime")
                         .HasColumnType("datetime2");
 
-                    b.Property<DateTime>("StartDate")
+                    b.Property<DateTime>("ReservationStartDateTime")
                         .HasColumnType("datetime2");
 
                     b.Property<string>("UserId")

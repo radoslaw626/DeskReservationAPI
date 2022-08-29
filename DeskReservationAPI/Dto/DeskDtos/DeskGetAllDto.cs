@@ -1,10 +1,11 @@
-﻿using Newtonsoft.Json;
+﻿using DeskReservationAPI.Entities;
+using Newtonsoft.Json;
 
-namespace DeskReservationAPI.Entities
+namespace DeskReservationAPI.Dto.DeskDtos
 {
-    public class Desk
+    public class DeskGetAllDto
     {
-        public Desk()
+        public DeskGetAllDto()
         {
             Available = false;
         }
@@ -12,7 +13,6 @@ namespace DeskReservationAPI.Entities
         //Tag of exact Desk
         public int Number { get; set; }
         public bool? Available { get; set; }
-
-        public Location Location { get; set; }
+        public string City { get; set; }
     }
 }

@@ -1,5 +1,6 @@
 ﻿using AutoMapper;
 using DeskReservationAPI.Dto;
+using DeskReservationAPI.Dto.ReservationDtos;
 using DeskReservationAPI.Entities;
 
 namespace DeskReservationAPI.Helpers
@@ -10,6 +11,8 @@ namespace DeskReservationAPI.Helpers
         {
             CreateMap<LocationAddDto, Location>();
             CreateMap<RegisterDto, ApplicationUser>();
+            CreateMap<Location, LocationGetAllDto>();
+            CreateMap<ReservationDateRangeDto, Reservation>();
         }
     }
 }
